@@ -153,28 +153,29 @@ class BrowserLauncher:
         utils.logger.info(f"[BrowserLauncher] 调试端口: {debug_port}")
         utils.logger.info(f"[BrowserLauncher] 无头模式: {headless}")
         
-        try:
-            # 在Windows上，使用CREATE_NEW_PROCESS_GROUP避免Ctrl+C影响子进程
-            if self.system == "Windows":
-                process = subprocess.Popen(
-                    args,
-                    stdout=subprocess.DEVNULL,
-                    stderr=subprocess.DEVNULL,
-                    creationflags=subprocess.CREATE_NEW_PROCESS_GROUP
-                )
-            else:
-                process = subprocess.Popen(
-                    args,
-                    stdout=subprocess.DEVNULL,
-                    stderr=subprocess.DEVNULL,
-                    preexec_fn=os.setsid  # 创建新的进程组
-                )
+        pass 
+        # try:
+        #     # 在Windows上，使用CREATE_NEW_PROCESS_GROUP避免Ctrl+C影响子进程
+        #     if self.system == "Windows":
+        #         process = subprocess.Popen(
+        #             args,
+        #             stdout=subprocess.DEVNULL,
+        #             stderr=subprocess.DEVNULL,
+        #             creationflags=subprocess.CREATE_NEW_PROCESS_GROUP
+        #         )
+        #     else:
+        #         process = subprocess.Popen(
+        #             args,
+        #             stdout=subprocess.DEVNULL,
+        #             stderr=subprocess.DEVNULL,
+        #             preexec_fn=os.setsid  # 创建新的进程组
+        #         )
             
-            return process
+        #     return process
             
-        except Exception as e:
-            utils.logger.error(f"[BrowserLauncher] 启动浏览器失败: {e}")
-            raise
+        # except Exception as e:
+        #     utils.logger.error(f"[BrowserLauncher] 启动浏览器失败: {e}")
+        #     raise
     
     def wait_for_browser_ready(self, debug_port: int, timeout: int = 30) -> bool:
         """
@@ -231,6 +232,7 @@ class BrowserLauncher:
         清理资源，关闭浏览器进程
         """
         if self.browser_process:
+            pass # wangli fix me
             try:
                 utils.logger.info("[BrowserLauncher] 正在关闭浏览器进程...")
                 
