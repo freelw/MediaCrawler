@@ -48,7 +48,7 @@ class CDPBrowserManager:
             browser_path = '/no/browser'
 
             # 2. 获取可用端口
-            self.debug_port = self.launcher.find_available_port(config.CDP_DEBUG_PORT)
+            self.debug_port = config.CDP_DEBUG_PORT
 
             # 3. 启动浏览器
             await self._launch_browser(browser_path, headless)
@@ -192,7 +192,9 @@ class CDPBrowserManager:
         try:
             # 获取正确的WebSocket URL
             # ws_url = await self._get_browser_websocket_url(self.debug_port)
-            ws_url = 'ws://127.0.0.1:9222/devtools/browser/09ac2b07-f726-43dd-9367-7d2a162e7c22'
+            ws_url = os.environ.get('WS_URL')
+            print(f"WS_URL 环境变量的值是: {ws_url}")
+            #ws_url = 'ws://127.0.0.1:9222/devtools/browser/17dcfd9b-faea-4cf4-9000-dd04c2cde233'
             utils.logger.info(f"[CDPBrowserManager] 正在通过CDP连接到浏览器: {ws_url}")
 
             # 使用Playwright的connectOverCDP方法连接
