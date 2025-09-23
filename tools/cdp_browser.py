@@ -44,7 +44,7 @@ class CDPBrowserManager:
         self.debug_port: Optional[int] = None
         self.b = Browser(api_key=API_KEY)
         self.session = self.b.sessions.create(project_id=PROJECT_ID)
-        self.ws_url = f"wss://freelw.cc/{self.session.webSocketDebuggerUrl}?session_id={self.session.id}"
+        self.ws_url = f"wss://freelw.cc{self.session.webSocketDebuggerUrl}?session_id={self.session.id}"
         print("ws  URL:", self.ws_url)
         print("Session replay URL:", f"https://freelw.cc/index.html?session_id={self.session.id}")
 
@@ -67,7 +67,7 @@ class CDPBrowserManager:
             self.debug_port = config.CDP_DEBUG_PORT
 
             # 3. 启动浏览器
-            await self._launch_browser(browser_path, headless)
+            # await self._launch_browser(browser_path, headless)
 
             # 4. 通过CDP连接
             await self._connect_via_cdp(playwright)
@@ -176,38 +176,12 @@ class CDPBrowserManager:
                 "[CDPBrowserManager] CDP连接测试失败，但将继续尝试连接"
             )
 
-    async def _get_browser_websocket_url(self, debug_port: int) -> str:
-        """
-        获取浏览器的WebSocket连接URL
-        """
-        try:
-            async with httpx.AsyncClient() as client:
-                response = await client.get(
-                    f"http://localhost:{debug_port}/json/version", timeout=10
-                )
-                if response.status_code == 200:
-                    data = response.json()
-                    ws_url = data.get("webSocketDebuggerUrl")
-                    if self.ws_url:
-                        utils.logger.info(
-                            f"[CDPBrowserManager] 获取到浏览器WebSocket URL: {ws_url}"
-                        )
-                        return self.ws_url
-                    else:
-                        raise RuntimeError("未找到webSocketDebuggerUrl")
-                else:
-                    raise RuntimeError(f"HTTP {response.status_code}: {response.text}")
-        except Exception as e:
-            utils.logger.error(f"[CDPBrowserManager] 获取WebSocket URL失败: {e}")
-            raise
 
     async def _connect_via_cdp(self, playwright: Playwright):
         """
         通过CDP连接到浏览器
         """
         try:
-            # 获取正确的WebSocket URL
-            # ws_url = await self._get_browser_websocket_url(self.debug_port)
             
             utils.logger.info(f"[CDPBrowserManager] 正在通过CDP连接到浏览器: {self.ws_url}")
 
