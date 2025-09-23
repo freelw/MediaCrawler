@@ -20,6 +20,17 @@ import config
 from tools.browser_launcher import BrowserLauncher
 from tools import utils
 
+from dotenv import load_dotenv
+from lexmount_browser import Browser
+
+load_dotenv()
+
+API_KEY = os.environ["API_KEY"]
+PROJECT_ID = os.environ["PROJECT_ID"]
+
+print("API_KEY:", API_KEY)
+print("PROJECT_ID:", PROJECT_ID)
+
 
 class CDPBrowserManager:
     """
@@ -31,6 +42,10 @@ class CDPBrowserManager:
         self.browser: Optional[Browser] = None
         self.browser_context: Optional[BrowserContext] = None
         self.debug_port: Optional[int] = None
+        self.b = Browser(api_key=API_KEY)
+        self.session = b.sessions.create(project_id=PROJECT_ID)
+        self.ws_url = f"wss://freelw.cc/api/v1/browser/connect?session_id={self.session.id}"
+        print("Session replay URL:", self.ws_url)
 
     async def launch_and_connect(
         self,
@@ -172,11 +187,11 @@ class CDPBrowserManager:
                 if response.status_code == 200:
                     data = response.json()
                     ws_url = data.get("webSocketDebuggerUrl")
-                    if ws_url:
+                    if self.ws_url:
                         utils.logger.info(
                             f"[CDPBrowserManager] 获取到浏览器WebSocket URL: {ws_url}"
                         )
-                        return ws_url
+                        return self.ws_url
                     else:
                         raise RuntimeError("未找到webSocketDebuggerUrl")
                 else:
@@ -192,13 +207,11 @@ class CDPBrowserManager:
         try:
             # 获取正确的WebSocket URL
             # ws_url = await self._get_browser_websocket_url(self.debug_port)
-            ws_url = os.environ.get('WS_URL')
-            print(f"WS_URL 环境变量的值是: {ws_url}")
-            #ws_url = 'ws://127.0.0.1:9222/devtools/browser/17dcfd9b-faea-4cf4-9000-dd04c2cde233'
-            utils.logger.info(f"[CDPBrowserManager] 正在通过CDP连接到浏览器: {ws_url}")
+            
+            utils.logger.info(f"[CDPBrowserManager] 正在通过CDP连接到浏览器: {self.ws_url}")
 
             # 使用Playwright的connectOverCDP方法连接
-            self.browser = await playwright.chromium.connect_over_cdp(ws_url)
+            self.browser = await playwright.chromium.connect_over_cdp(self.ws_url)
 
             if self.browser.is_connected():
                 utils.logger.info("[CDPBrowserManager] 成功连接到浏览器")
