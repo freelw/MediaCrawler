@@ -181,24 +181,26 @@ class BrowserLauncher:
         """
         等待浏览器准备就绪
         """
-        utils.logger.info(f"[BrowserLauncher] 等待浏览器在端口 {debug_port} 上准备就绪...")
+        time.sleep(3)
+        return True
+        # utils.logger.info(f"[BrowserLauncher] 等待浏览器在端口 {debug_port} 上准备就绪...")
         
-        start_time = time.time()
-        while time.time() - start_time < timeout:
-            try:
-                with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
-                    s.settimeout(1)
-                    result = s.connect_ex(('localhost', debug_port))
-                    if result == 0:
-                        utils.logger.info(f"[BrowserLauncher] 浏览器已在端口 {debug_port} 上准备就绪")
-                        return True
-            except Exception:
-                pass
+        # start_time = time.time()
+        # while time.time() - start_time < timeout:
+        #     try:
+        #         with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
+        #             s.settimeout(1)
+        #             result = s.connect_ex(('localhost', debug_port))
+        #             if result == 0:
+        #                 utils.logger.info(f"[BrowserLauncher] 浏览器已在端口 {debug_port} 上准备就绪")
+        #                 return True
+        #     except Exception:
+        #         pass
             
-            time.sleep(0.5)
+        #     time.sleep(0.5)
         
-        utils.logger.error(f"[BrowserLauncher] 浏览器在 {timeout} 秒内未能准备就绪")
-        return False
+        # utils.logger.error(f"[BrowserLauncher] 浏览器在 {timeout} 秒内未能准备就绪")
+        # return False
     
     def get_browser_info(self, browser_path: str) -> Tuple[str, str]:
         """

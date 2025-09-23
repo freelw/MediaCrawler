@@ -4,15 +4,42 @@ import json
 from typing import Optional, Dict, Any
 from urllib.parse import urljoin
 
+
 class Session:
     """Represents a browser session"""
     
     def __init__(self, session_id: str, browser: 'Browser'):
         self.id = session_id
         self._browser = browser
+        self.webSocketDebuggerUrl = None
+        self._get_web_socket_debugger_url()
+    
+    def _get_web_socket_debugger_url(self):
+        """Get the WebSocket debugger URL for this session"""
+        try:
+            url = urljoin(self._browser.base_url, '/json/version')
+            params = {'session_id': self.id}
+            
+            response = requests.get(url, params=params)
+            response.raise_for_status()
+            
+            data = response.json()
+            full_ws_url = data.get('webSocketDebuggerUrl')
+            
+            if full_ws_url:
+                # Extract only the path part from the WebSocket URL
+                from urllib.parse import urlparse
+                parsed = urlparse(full_ws_url)
+                self.webSocketDebuggerUrl = parsed.path
+            else:
+                self.webSocketDebuggerUrl = None
+            
+        except requests.exceptions.RequestException as e:
+            print(f"Warning: Failed to get WebSocket debugger URL: {e}")
+            self.webSocketDebuggerUrl = None
     
     def __str__(self):
-        return f"Session(id='{self.id}')"
+        return f"Session(id='{self.id}', webSocketDebuggerUrl='{self.webSocketDebuggerUrl}')"
     
     def __repr__(self):
         return self.__str__()

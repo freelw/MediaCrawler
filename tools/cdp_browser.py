@@ -21,7 +21,7 @@ from tools.browser_launcher import BrowserLauncher
 from tools import utils
 
 from dotenv import load_dotenv
-from lexmount_browser import Browser
+from .lexmount_browser import Browser
 
 load_dotenv()
 
@@ -43,9 +43,10 @@ class CDPBrowserManager:
         self.browser_context: Optional[BrowserContext] = None
         self.debug_port: Optional[int] = None
         self.b = Browser(api_key=API_KEY)
-        self.session = b.sessions.create(project_id=PROJECT_ID)
-        self.ws_url = f"wss://freelw.cc/api/v1/browser/connect?session_id={self.session.id}"
-        print("Session replay URL:", self.ws_url)
+        self.session = self.b.sessions.create(project_id=PROJECT_ID)
+        self.ws_url = f"wss://freelw.cc/{self.session.webSocketDebuggerUrl}?session_id={self.session.id}"
+        print("ws  URL:", self.ws_url)
+        print("Session replay URL:", f"https://freelw.cc/index.html?session_id={self.session.id}")
 
     async def launch_and_connect(
         self,
