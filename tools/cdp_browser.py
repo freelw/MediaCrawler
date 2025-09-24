@@ -45,6 +45,7 @@ class CDPBrowserManager:
         self.b = Browser(api_key=API_KEY)
         self.session = self.b.sessions.create(project_id=PROJECT_ID)
         self.ws_url = f"ws://10.0.8.1{self.session.webSocketDebuggerUrl}?session_id={self.session.id}"
+        # self.ws_url = f"wss://freelw.cc{self.session.webSocketDebuggerUrl}?session_id={self.session.id}"
         print("ws  URL:", self.ws_url)
         print("Session replay URL:", f"https://freelw.cc/index.html?session_id={self.session.id}")
 
